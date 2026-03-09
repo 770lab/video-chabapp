@@ -8,156 +8,180 @@ import {
 const FONT =
   "system-ui, -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif";
 
-const SiddurIcon: React.FC<{ opacity: number }> = ({ opacity }) => (
-  <svg
-    width="120"
-    height="120"
-    viewBox="0 0 120 120"
-    fill="none"
-    style={{ opacity }}
-  >
-    <rect
-      x="20"
-      y="10"
-      width="80"
-      height="100"
-      rx="6"
-      fill="url(#bookGrad)"
-      stroke="rgba(255,255,255,0.2)"
-      strokeWidth="2"
-    />
-    <rect x="20" y="10" width="12" height="100" rx="4" fill="url(#spineGrad)" />
-    <g transform="translate(60, 55)">
-      <polygon
-        points="0,-18 15.6,9 -15.6,9"
-        fill="none"
-        stroke="rgba(255,255,255,0.9)"
-        strokeWidth="2.5"
-      />
-      <polygon
-        points="0,18 15.6,-9 -15.6,-9"
-        fill="none"
-        stroke="rgba(255,255,255,0.9)"
-        strokeWidth="2.5"
-      />
-    </g>
-    <rect x="42" y="82" width="46" height="3" rx="1.5" fill="rgba(255,255,255,0.4)" />
-    <rect x="48" y="90" width="34" height="3" rx="1.5" fill="rgba(255,255,255,0.3)" />
-    <defs>
-      <linearGradient id="bookGrad" x1="20" y1="10" x2="100" y2="110">
-        <stop offset="0%" stopColor="#6228d7" />
-        <stop offset="100%" stopColor="#ee2a7b" />
-      </linearGradient>
-      <linearGradient id="spineGrad" x1="20" y1="10" x2="32" y2="110">
-        <stop offset="0%" stopColor="#4a1fa8" />
-        <stop offset="100%" stopColor="#c41656" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
+const PRAYERS = [
+  "Cha'harit",
+  "Min'ha",
+  "Arvit",
+  "Kriat Chéma al Hamita",
+];
 
 export const Scene3Prieres: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const slideIn = spring({
-    frame,
-    fps,
-    config: { damping: 15, stiffness: 90, mass: 0.7 },
-  });
-
-  const iconTranslateX = interpolate(slideIn, [0, 1], [-400, 0]);
-
-  const textSlide = spring({
-    frame: frame - Math.floor(0.2 * fps),
-    fps,
-    config: { damping: 14, stiffness: 80, mass: 0.8 },
-  });
-
-  const textTranslateX = interpolate(textSlide, [0, 1], [-300, 0]);
-  const textOpacity = interpolate(textSlide, [0, 1], [0, 1]);
-
-  const subtitleSlide = spring({
-    frame: frame - Math.floor(0.5 * fps),
-    fps,
-    config: { damping: 14, stiffness: 70, mass: 0.9 },
-  });
-
-  const subtitleTranslateX = interpolate(subtitleSlide, [0, 1], [-300, 0]);
-  const subtitleOpacity = interpolate(subtitleSlide, [0, 1], [0, 1]);
-
-  const glowIntensity = interpolate(frame, [0.8 * fps, 2 * fps], [0, 1], {
-    extrapolateLeft: "clamp",
+  const fadeIn = interpolate(frame, [0, 0.3 * fps], [0, 1], {
     extrapolateRight: "clamp",
   });
 
   return (
     <div
       style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#000000",
-        padding: "0 80px",
-        gap: 50,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#fafafa",
+        overflow: "hidden",
+        opacity: fadeIn,
       }}
     >
       <div
         style={{
-          transform: `translateX(${iconTranslateX}px)`,
-          filter: `drop-shadow(0 0 ${40 * glowIntensity}px rgba(98, 40, 215, ${0.5 * glowIntensity}))`,
-          flexShrink: 0,
-        }}
-      >
-        <SiddurIcon opacity={slideIn} />
-      </div>
-
-      <div
-        style={{
+          padding: "68px 18px 20px",
           display: "flex",
           flexDirection: "column",
           gap: 16,
         }}
       >
-        <div
-          style={{
-            transform: `translateX(${textTranslateX}px)`,
-            opacity: textOpacity,
-            fontSize: 64,
-            fontFamily: FONT,
-            fontWeight: 800,
-            color: "white",
-            lineHeight: 1.1,
-          }}
-        >
-          Tefila &{"\n"}
-          <span
+        {/* Header */}
+        <div style={{ textAlign: "center" }}>
+          <div
             style={{
-              background:
-                "linear-gradient(135deg, #6228d7, #ee2a7b, #f9ce34)",
+              fontSize: 13,
+              fontFamily: FONT,
+              fontWeight: 600,
+              color: "#8e8e8e",
+              letterSpacing: 1,
+              textTransform: "uppercase",
+              marginBottom: 6,
+            }}
+          >
+            Tefila
+          </div>
+          <div
+            style={{
+              fontSize: 32,
+              fontFamily: FONT,
+              fontWeight: 800,
+              background: "linear-gradient(135deg, #6228d7, #ee2a7b)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
           >
-            Tehilim
-          </span>
+            Prières & Tehilim
+          </div>
         </div>
+
+        {/* Star of David icon */}
+        <div style={{ textAlign: "center", margin: "4px 0" }}>
+          <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+            <polygon
+              points="25,5 42,38 8,38"
+              fill="none"
+              stroke="#6228d7"
+              strokeWidth="2"
+              opacity="0.6"
+            />
+            <polygon
+              points="25,45 42,12 8,12"
+              fill="none"
+              stroke="#ee2a7b"
+              strokeWidth="2"
+              opacity="0.6"
+            />
+          </svg>
+        </div>
+
+        {/* Prayer list */}
+        {PRAYERS.map((prayer, i) => {
+          const delay = 0.3 + i * 0.12;
+          const itemSpring = spring({
+            frame: frame - Math.floor(delay * fps),
+            fps,
+            config: { damping: 14, stiffness: 100, mass: 0.6 },
+          });
+
+          return (
+            <div
+              key={prayer}
+              style={{
+                padding: "16px 16px",
+                borderRadius: 12,
+                background: "#ffffff",
+                border: "1px solid #dbdbdb",
+                borderLeft: "3px solid #6228d7",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                opacity: itemSpring,
+                transform: `translateX(${interpolate(itemSpring, [0, 1], [150, 0])}px)`,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: FONT,
+                  fontWeight: 700,
+                  fontSize: 17,
+                  color: "#262626",
+                }}
+              >
+                {prayer}
+              </span>
+              <span style={{ fontSize: 16, color: "#c7c7c7" }}>›</span>
+            </div>
+          );
+        })}
+
+        {/* Tehilim section */}
         <div
           style={{
-            transform: `translateX(${subtitleTranslateX}px)`,
-            opacity: subtitleOpacity,
-            fontSize: 30,
+            marginTop: 8,
+            fontSize: 11,
             fontFamily: FONT,
-            fontWeight: 400,
-            color: "rgba(255,255,255,0.6)",
-            lineHeight: 1.5,
-            maxWidth: 500,
+            fontWeight: 700,
+            color: "#8e8e8e",
+            textTransform: "uppercase",
+            letterSpacing: 1,
           }}
         >
-          Toutes vos prières et Tehilim au même endroit
+          Tehilim
         </div>
+        {[1, 2, 3].map((book, i) => {
+          const delay = 0.8 + i * 0.1;
+          const bookSpring = spring({
+            frame: frame - Math.floor(delay * fps),
+            fps,
+            config: { damping: 14, stiffness: 100, mass: 0.6 },
+          });
+
+          return (
+            <div
+              key={book}
+              style={{
+                padding: "14px 16px",
+                borderRadius: 12,
+                background: "#ffffff",
+                border: "1px solid #dbdbdb",
+                borderLeft: "3px solid #8b2fb8",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                opacity: bookSpring,
+                transform: `translateX(${interpolate(bookSpring, [0, 1], [150, 0])}px)`,
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: FONT,
+                  fontWeight: 600,
+                  fontSize: 15,
+                  color: "#262626",
+                }}
+              >
+                Livre {book}
+              </span>
+              <span style={{ fontSize: 16, color: "#c7c7c7" }}>›</span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

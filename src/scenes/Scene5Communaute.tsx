@@ -4,272 +4,227 @@ import {
   spring,
   interpolate,
 } from "remotion";
-import { loadFont } from "@remotion/google-fonts/Poppins";
 
-const { fontFamily } = loadFont("normal", {
-  weights: ["400", "600", "700"],
-  subsets: ["latin"],
-});
+const FONT =
+  "system-ui, -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif";
 
-const MEMBERS = [
-  { name: "David", color: "#833ab4" },
-  { name: "Sarah", color: "#fd1d1d" },
-  { name: "Moshe", color: "#fcb045" },
-  { name: "Rachel", color: "#833ab4" },
-  { name: "Yaakov", color: "#fd1d1d" },
+const CENTERS = [
+  { name: "Beth Chabad Paris 11", address: "17 Rue des Bluets", dist: "0.8 km" },
+  { name: "Beth Chabad Marais", address: "22 Rue des Rosiers", dist: "1.2 km" },
+  { name: "Beth Loubavitch", address: "8 Rue Lamartine", dist: "2.1 km" },
+  { name: "Beth Chabad Vincennes", address: "5 Av. de Paris", dist: "4.3 km" },
 ];
-
-const PeopleIcon: React.FC<{ progress: number }> = ({ progress }) => {
-  const scale = interpolate(progress, [0, 1], [0.5, 1]);
-  return (
-    <svg
-      width="120"
-      height="120"
-      viewBox="0 0 120 120"
-      fill="none"
-      style={{ transform: `scale(${scale})`, opacity: progress }}
-    >
-      {/* Center person */}
-      <circle cx="60" cy="38" r="14" fill="url(#pGrad1)" />
-      <path
-        d="M36 82c0-13.3 10.7-24 24-24s24 10.7 24 24"
-        stroke="url(#pGrad1)"
-        strokeWidth="4"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Left person */}
-      <circle cx="28" cy="48" r="10" fill="url(#pGrad2)" opacity="0.7" />
-      <path
-        d="M12 80c0-8.8 7.2-16 16-16s16 7.2 16 16"
-        stroke="url(#pGrad2)"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.7"
-      />
-      {/* Right person */}
-      <circle cx="92" cy="48" r="10" fill="url(#pGrad3)" opacity="0.7" />
-      <path
-        d="M76 80c0-8.8 7.2-16 16-16s16 7.2 16 16"
-        stroke="url(#pGrad3)"
-        strokeWidth="3"
-        strokeLinecap="round"
-        fill="none"
-        opacity="0.7"
-      />
-      <defs>
-        <linearGradient id="pGrad1" x1="40" y1="30" x2="80" y2="80">
-          <stop offset="0%" stopColor="#833ab4" />
-          <stop offset="100%" stopColor="#fd1d1d" />
-        </linearGradient>
-        <linearGradient id="pGrad2" x1="12" y1="40" x2="44" y2="80">
-          <stop offset="0%" stopColor="#fd1d1d" />
-          <stop offset="100%" stopColor="#fcb045" />
-        </linearGradient>
-        <linearGradient id="pGrad3" x1="76" y1="40" x2="108" y2="80">
-          <stop offset="0%" stopColor="#fcb045" />
-          <stop offset="100%" stopColor="#833ab4" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-};
 
 export const Scene5Communaute: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const iconEntry = spring({
-    frame,
-    fps,
-    config: { damping: 14, stiffness: 85, mass: 0.7 },
-  });
-
-  const iconScale = interpolate(iconEntry, [0, 1], [0.3, 1]);
-
-  const titleSlide = spring({
-    frame: frame - Math.floor(0.15 * fps),
-    fps,
-    config: { damping: 14, stiffness: 80, mass: 0.8 },
-  });
-
-  const titleTranslateX = interpolate(titleSlide, [0, 1], [-300, 0]);
-  const titleOpacity = interpolate(titleSlide, [0, 1], [0, 1]);
-
-  const subtitleSlide = spring({
-    frame: frame - Math.floor(0.35 * fps),
-    fps,
-    config: { damping: 14, stiffness: 70, mass: 0.9 },
+  const fadeIn = interpolate(frame, [0, 0.3 * fps], [0, 1], {
+    extrapolateRight: "clamp",
   });
 
   return (
     <div
       style={{
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#000000",
-        padding: "0 80px",
-        gap: 50,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#fafafa",
+        overflow: "hidden",
+        opacity: fadeIn,
       }}
     >
-      {/* Top: icon + title */}
       <div
         style={{
+          padding: "68px 18px 20px",
           display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 40,
-          alignSelf: "flex-start",
+          flexDirection: "column",
+          gap: 14,
         }}
       >
-        <div
-          style={{
-            transform: `scale(${iconScale})`,
-            filter: `drop-shadow(0 0 35px rgba(131, 58, 180, ${0.5 * iconEntry}))`,
-            flexShrink: 0,
-          }}
-        >
-          <PeopleIcon progress={iconEntry} />
-        </div>
-        <div
-          style={{
-            transform: `translateX(${titleTranslateX}px)`,
-            opacity: titleOpacity,
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-          }}
-        >
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: 4 }}>
           <div
             style={{
-              fontSize: 64,
-              fontFamily,
-              fontWeight: 700,
-              background:
-                "linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)",
+              fontSize: 32,
+              fontFamily: FONT,
+              fontWeight: 800,
+              background: "linear-gradient(135deg, #6228d7, #ee2a7b, #f9ce34)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
           >
-            Communauté
+            Beth Chabad
           </div>
           <div
             style={{
-              fontSize: 28,
-              fontFamily,
-              fontWeight: 400,
-              color: "rgba(255,255,255,0.55)",
-              opacity: subtitleSlide,
-              transform: `translateX(${interpolate(subtitleSlide, [0, 1], [-200, 0])}px)`,
+              fontSize: 13,
+              fontFamily: FONT,
+              fontWeight: 500,
+              color: "#8e8e8e",
+              marginTop: 4,
             }}
           >
-            Connectez-vous avec votre communauté
+            Trouvez votre communauté
           </div>
         </div>
-      </div>
 
-      {/* Members bubbles */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 24,
-          justifyContent: "center",
-          flexWrap: "wrap",
-        }}
-      >
-        {MEMBERS.map((member, i) => {
-          const delay = 0.5 + i * 0.12;
-          const bubbleSpring = spring({
-            frame: frame - Math.floor(delay * fps),
-            fps,
-            config: { damping: 12, stiffness: 120, mass: 0.5 },
-          });
-          const bubbleScale = interpolate(bubbleSpring, [0, 1], [0, 1]);
-
-          return (
+        {/* Map placeholder */}
+        <div
+          style={{
+            borderRadius: 16,
+            height: 160,
+            background: "linear-gradient(135deg, #e8e0f0, #f0e0ea, #f5ebd5)",
+            border: "1px solid #efefef",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {/* Grid lines */}
+          {Array.from({ length: 6 }).map((_, i) => (
             <div
-              key={member.name}
+              key={`h${i}`}
               style={{
-                transform: `scale(${bubbleScale})`,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: 10,
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: i * 32,
+                height: 1,
+                backgroundColor: "rgba(0,0,0,0.04)",
               }}
-            >
+            />
+          ))}
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={`v${i}`}
+              style={{
+                position: "absolute",
+                top: 0,
+                bottom: 0,
+                left: i * 44,
+                width: 1,
+                backgroundColor: "rgba(0,0,0,0.04)",
+              }}
+            />
+          ))}
+          {/* Pin markers */}
+          {[
+            { x: "30%", y: "40%" },
+            { x: "55%", y: "30%" },
+            { x: "70%", y: "60%" },
+            { x: "40%", y: "70%" },
+          ].map((pos, i) => {
+            const pinSpring = spring({
+              frame: frame - Math.floor((0.4 + i * 0.15) * fps),
+              fps,
+              config: { damping: 10, stiffness: 150, mass: 0.4 },
+            });
+            return (
               <div
+                key={i}
                 style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 40,
-                  background: `linear-gradient(135deg, ${member.color}, ${member.color}88)`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 32,
-                  fontFamily,
-                  fontWeight: 700,
-                  color: "white",
-                  boxShadow: `0 0 20px ${member.color}44`,
+                  position: "absolute",
+                  left: pos.x,
+                  top: pos.y,
+                  transform: `scale(${pinSpring}) translate(-50%, -100%)`,
+                  fontSize: 22,
                 }}
               >
-                {member.name[0]}
+                📍
               </div>
-              <span
-                style={{
-                  fontFamily,
-                  fontWeight: 400,
-                  fontSize: 20,
-                  color: "rgba(255,255,255,0.7)",
-                }}
-              >
-                {member.name}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+          <div
+            style={{
+              fontSize: 12,
+              fontFamily: FONT,
+              fontWeight: 600,
+              color: "#8e8e8e",
+              position: "absolute",
+              bottom: 8,
+              right: 12,
+              backgroundColor: "rgba(255,255,255,0.8)",
+              padding: "2px 8px",
+              borderRadius: 6,
+            }}
+          >
+            🇫🇷 Paris
+          </div>
+        </div>
 
-      {/* Connection lines animation */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          gap: 16,
-          alignItems: "center",
-        }}
-      >
-        {["Événements", "Minyanim", "Entraide"].map((tag, i) => {
-          const tagDelay = 1.0 + i * 0.15;
-          const tagSpring = spring({
-            frame: frame - Math.floor(tagDelay * fps),
+        {/* Centers list */}
+        <div
+          style={{
+            fontSize: 11,
+            fontFamily: FONT,
+            fontWeight: 700,
+            color: "#8e8e8e",
+            textTransform: "uppercase",
+            letterSpacing: 1,
+          }}
+        >
+          À proximité
+        </div>
+
+        {CENTERS.map((center, i) => {
+          const delay = 0.6 + i * 0.12;
+          const cardSpring = spring({
+            frame: frame - Math.floor(delay * fps),
             fps,
             config: { damping: 13, stiffness: 100, mass: 0.6 },
           });
 
           return (
             <div
-              key={tag}
+              key={center.name}
               style={{
-                opacity: tagSpring,
-                transform: `translateY(${interpolate(tagSpring, [0, 1], [30, 0])}px)`,
-                padding: "12px 24px",
-                borderRadius: 30,
-                background:
-                  "linear-gradient(135deg, rgba(131,58,180,0.2), rgba(253,29,29,0.15))",
-                border: "1px solid rgba(255,255,255,0.1)",
-                fontFamily,
-                fontWeight: 600,
-                fontSize: 22,
-                color: "rgba(255,255,255,0.85)",
+                padding: "14px 16px",
+                borderRadius: 12,
+                background: "#ffffff",
+                border: "1px solid #dbdbdb",
+                borderLeft: "3px solid #6228d7",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                opacity: cardSpring,
+                transform: `translateX(${interpolate(cardSpring, [0, 1], [150, 0])}px)`,
               }}
             >
-              {tag}
+              <div>
+                <div
+                  style={{
+                    fontFamily: FONT,
+                    fontWeight: 700,
+                    fontSize: 15,
+                    color: "#262626",
+                  }}
+                >
+                  {center.name}
+                </div>
+                <div
+                  style={{
+                    fontFamily: FONT,
+                    fontWeight: 400,
+                    fontSize: 12,
+                    color: "#8e8e8e",
+                    marginTop: 2,
+                  }}
+                >
+                  {center.address}
+                </div>
+              </div>
+              <span
+                style={{
+                  fontFamily: FONT,
+                  fontWeight: 600,
+                  fontSize: 13,
+                  color: "#6228d7",
+                }}
+              >
+                {center.dist}
+              </span>
             </div>
           );
         })}

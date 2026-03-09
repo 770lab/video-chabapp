@@ -1,20 +1,46 @@
-import { useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
+import {
+  useCurrentFrame,
+  useVideoConfig,
+  interpolate,
+  spring,
+  Easing,
+} from "remotion";
+
+const FONT =
+  "system-ui, -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif";
 
 export const Scene1Logo: React.FC = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  const opacity = interpolate(frame, [0, 1.2 * fps], [0, 1], {
+  // Logo scale + opacity with spring
+  const logoSpring = spring({
+    frame,
+    fps,
+    config: { damping: 12, stiffness: 80, mass: 0.8 },
+  });
+  const logoScale = interpolate(logoSpring, [0, 1], [0.5, 1]);
+
+  // Gradient shimmer
+  const shimmerX = interpolate(frame, [0, 2 * fps], [-100, 200], {
+    extrapolateRight: "clamp",
+  });
+
+  // Subtitle
+  const subSpring = spring({
+    frame: frame - Math.floor(0.5 * fps),
+    fps,
+    config: { damping: 200 },
+  });
+  const subTranslateY = interpolate(subSpring, [0, 1], [20, 0]);
+
+  // Decorative ring
+  const ringScale = interpolate(frame, [0.3 * fps, 1.5 * fps], [0, 1], {
+    extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
     easing: Easing.out(Easing.cubic),
   });
-
-  const scale = interpolate(frame, [0, 1.2 * fps], [0.8, 1], {
-    extrapolateRight: "clamp",
-    easing: Easing.out(Easing.cubic),
-  });
-
-  const glowOpacity = interpolate(frame, [0.8 * fps, 1.8 * fps], [0, 0.6], {
+  const ringOpacity = interpolate(frame, [0.3 * fps, 1 * fps, 1.8 * fps, 2.2 * fps], [0, 0.3, 0.3, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -22,68 +48,86 @@ export const Scene1Logo: React.FC = () => {
   return (
     <div
       style={{
-        flex: 1,
+        width: "100%",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "#000000",
+        background: "linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%)",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
+      {/* Expanding ring */}
       <div
         style={{
-          opacity,
-          transform: `scale(${scale})`,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 20,
+          position: "absolute",
+          width: 300,
+          height: 300,
+          borderRadius: "50%",
+          border: "2px solid rgba(238, 42, 123, 0.5)",
+          transform: `scale(${ringScale})`,
+          opacity: ringOpacity,
+        }}
+      />
+
+      {/* Logo */}
+      <div
+        style={{
+          transform: `scale(${logoScale})`,
+          opacity: logoSpring,
+          position: "relative",
         }}
       >
         <div
           style={{
-            fontSize: 120,
-            fontFamily:
-              "system-ui, -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif",
+            fontSize: 56,
+            fontFamily: FONT,
             fontWeight: 800,
-            color: "white",
-            textAlign: "center",
             letterSpacing: 2,
+            background:
+              "linear-gradient(135deg, #6228d7, #ee2a7b, #f9ce34)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
             position: "relative",
           }}
         >
-          <span
+          Chab'app
+          {/* Shimmer overlay */}
+          <div
             style={{
-              background:
-                "linear-gradient(135deg, #6228d7, #ee2a7b, #f9ce34)",
+              position: "absolute",
+              inset: 0,
+              background: `linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)`,
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              filter: `drop-shadow(0 0 ${30 * glowOpacity}px rgba(238, 42, 123, ${glowOpacity}))`,
+              transform: `translateX(${shimmerX}%)`,
             }}
           >
             Chab'app
-          </span>
+          </div>
         </div>
-        <div
-          style={{
-            fontSize: 28,
-            fontFamily:
-              "'EB Garamond', Georgia, serif",
-            fontWeight: 700,
-            color: "rgba(255,255,255,0.6)",
-            letterSpacing: 3,
-            textTransform: "uppercase",
-            textAlign: "center",
-            lineHeight: 1.4,
-            maxWidth: 700,
-            opacity: interpolate(frame, [0.6 * fps, 1.4 * fps], [0, 1], {
-              extrapolateLeft: "clamp",
-              extrapolateRight: "clamp",
-            }),
-          }}
-        >
-          Machia'h arrive, soyons prêt à l'accueillir
-        </div>
+      </div>
+
+      {/* Subtitle */}
+      <div
+        style={{
+          marginTop: 20,
+          fontSize: 13,
+          fontFamily: "'EB Garamond', Georgia, serif",
+          fontWeight: 500,
+          color: "rgba(255,255,255,0.45)",
+          letterSpacing: 2,
+          textTransform: "uppercase",
+          textAlign: "center",
+          lineHeight: 1.8,
+          maxWidth: 260,
+          opacity: subSpring,
+          transform: `translateY(${subTranslateY}px)`,
+        }}
+      >
+        Machia'h arrive,{"\n"}soyons prêt à l'accueillir
       </div>
     </div>
   );

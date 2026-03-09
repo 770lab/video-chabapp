@@ -18,145 +18,164 @@ const MENU_ITEMS = [
   { label: "Beth Chabad", color: "#f9ce34" },
 ];
 
-const IPhoneMockup: React.FC = () => {
+export const Scene2Mockup: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+
+  const fadeIn = interpolate(frame, [0, 0.4 * fps], [0, 1], {
+    extrapolateRight: "clamp",
+  });
+
+  // Gentle scroll
+  const scrollOffset = interpolate(
+    frame,
+    [0.8 * fps, 2.5 * fps],
+    [0, -50],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+  );
+
   return (
     <div
       style={{
-        width: 340,
-        height: 700,
-        borderRadius: 50,
-        border: "4px solid rgba(255,255,255,0.15)",
+        width: "100%",
+        height: "100%",
         backgroundColor: "#fafafa",
-        position: "relative",
         overflow: "hidden",
-        boxShadow:
-          "0 0 60px rgba(98, 40, 215, 0.3), 0 0 120px rgba(238, 42, 123, 0.15)",
+        opacity: fadeIn,
       }}
     >
-      {/* Notch */}
       <div
         style={{
-          position: "absolute",
-          top: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: 160,
-          height: 34,
-          backgroundColor: "#000",
-          borderBottomLeftRadius: 20,
-          borderBottomRightRadius: 20,
-          zIndex: 10,
-        }}
-      />
-      {/* Screen content */}
-      <div
-        style={{
-          position: "absolute",
-          top: 50,
-          left: 16,
-          right: 16,
-          bottom: 16,
+          transform: `translateY(${scrollOffset}px)`,
+          padding: "60px 14px 20px",
           display: "flex",
           flexDirection: "column",
           gap: 8,
         }}
       >
+        {/* ב״ה */}
+        <div
+          style={{
+            textAlign: "right",
+            fontSize: 16,
+            fontWeight: 700,
+            color: "#000",
+            fontFamily: "serif",
+          }}
+        >
+          ב״ה
+        </div>
+
         {/* App header */}
         <div
           style={{
-            fontSize: 24,
+            fontSize: 26,
             fontFamily: FONT,
             fontWeight: 800,
             color: "#000",
             textAlign: "center",
             letterSpacing: 1,
-            marginBottom: 8,
           }}
         >
           Chab'app
         </div>
-        {/* Menu items matching real app */}
-        {MENU_ITEMS.map((item) => (
+
+        {/* Date */}
+        <div
+          style={{
+            textAlign: "center",
+            fontSize: 11,
+            color: "#8e8e8e",
+            fontFamily: FONT,
+            fontWeight: 500,
+            marginBottom: 4,
+          }}
+        >
+          Jeudi 6 Mars 2026 · 6 Adar II 5786
+        </div>
+
+        {/* Shabbat card */}
+        <div
+          style={{
+            borderRadius: 12,
+            background: "linear-gradient(135deg, #1a1a2e, #2d1b4e)",
+            padding: "16px 14px",
+            color: "white",
+          }}
+        >
           <div
-            key={item.label}
             style={{
-              width: "100%",
-              padding: "14px 14px",
-              borderRadius: 12,
-              background: "#ffffff",
-              border: "1px solid #dbdbdb",
-              borderLeft: `3px solid ${item.color}`,
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
+              fontFamily: FONT,
+              fontWeight: 700,
+              fontSize: 16,
+              marginBottom: 4,
             }}
           >
+            Parashat Vayikra
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              fontSize: 12,
+              fontFamily: FONT,
+              opacity: 0.8,
+            }}
+          >
+            <span>Allumage 18:24</span>
+            <span>Havdalah 19:28</span>
+          </div>
+        </div>
+
+        {/* Menu items */}
+        {MENU_ITEMS.map((item, i) => {
+          const itemDelay = 0.3 + i * 0.08;
+          const itemSpring = spring({
+            frame: frame - Math.floor(itemDelay * fps),
+            fps,
+            config: { damping: 14, stiffness: 100, mass: 0.6 },
+          });
+          const itemX = interpolate(itemSpring, [0, 1], [200, 0]);
+
+          return (
             <div
+              key={item.label}
               style={{
-                width: 32,
-                height: 32,
-                borderRadius: 10,
-                background: item.color,
-                opacity: 0.9,
+                width: "100%",
+                padding: "14px 14px",
+                borderRadius: 12,
+                background: "#ffffff",
+                border: "1px solid #dbdbdb",
+                borderLeft: `3px solid ${item.color}`,
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center",
-              }}
-            />
-            <span
-              style={{
-                fontFamily: FONT,
-                fontWeight: 700,
-                fontSize: 17,
-                color: "#262626",
+                gap: 12,
+                transform: `translateX(${itemX}px)`,
+                opacity: itemSpring,
               }}
             >
-              {item.label}
-            </span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export const Scene2Mockup: React.FC = () => {
-  const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-
-  const slideUp = spring({
-    frame,
-    fps,
-    config: {
-      damping: 14,
-      stiffness: 80,
-      mass: 0.8,
-    },
-  });
-
-  const translateY = interpolate(slideUp, [0, 1], [800, 0]);
-
-  const shadowOpacity = interpolate(slideUp, [0, 1], [0, 1], {
-    extrapolateRight: "clamp",
-  });
-
-  return (
-    <div
-      style={{
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#000000",
-      }}
-    >
-      <div
-        style={{
-          transform: `translateY(${translateY}px)`,
-          filter: `drop-shadow(0 0 80px rgba(98, 40, 215, ${0.4 * shadowOpacity}))`,
-        }}
-      >
-        <IPhoneMockup />
+              <div
+                style={{
+                  width: 36,
+                  height: 36,
+                  borderRadius: 12,
+                  background: item.color,
+                  opacity: 0.9,
+                }}
+              />
+              <span
+                style={{
+                  fontFamily: FONT,
+                  fontWeight: 700,
+                  fontSize: 16,
+                  color: "#262626",
+                }}
+              >
+                {item.label}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
